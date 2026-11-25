@@ -6,6 +6,13 @@ use App\Core\View;
 /** @var string $content */
 /** @var string $currentPath */
 $currentPath = $currentPath ?? '';
+
+$cartCount = 0;
+if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
+    foreach ($_SESSION['cart'] as $qty) {
+        $cartCount += (int) $qty;
+    }
+}
 ?>
 <!doctype html>
 <html lang="ru">
@@ -25,6 +32,9 @@ $currentPath = $currentPath ?? '';
       <nav class="nav">
         <a href="/" class="<?= $currentPath === '/' ? 'is-active' : '' ?>">Главная</a>
         <a href="/catalog" class="<?= $currentPath === '/catalog' ? 'is-active' : '' ?>">Каталог</a>
+        <a href="/cart" class="<?= $currentPath === '/cart' ? 'is-active' : '' ?>">
+          Корзина<?= $cartCount > 0 ? ' (' . View::e((string) $cartCount) . ')' : '' ?>
+        </a>
         <a href="/about" class="<?= $currentPath === '/about' ? 'is-active' : '' ?>">О магазине</a>
       </nav>
     </div>
@@ -36,7 +46,7 @@ $currentPath = $currentPath ?? '';
 
   <footer class="site-footer">
     <div class="wrap">
-      <p>ТРПО · практика 7 · MVC-каркас интернет-магазина</p>
+      <p>ТРПО · практика 9 · корзина и session</p>
     </div>
   </footer>
 </body>

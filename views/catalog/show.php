@@ -15,5 +15,9 @@ use App\Model\Product;
   <p>
     <?= $product->isInStock() ? 'В наличии' : 'Нет в наличии' ?>
   </p>
+  <form method="post" action="/cart/add">
+    <input type="hidden" name="product_id" value="<?= View::e((string) $product->id()) ?>">
+    <button class="button" type="submit">В корзину</button>
+  </form>
   <p><a class="button" href="/catalog">Назад в каталог</a></p>
 </section>

@@ -53,6 +53,10 @@ use App\Model\Product;
           <p><?= View::e($categoryNames[$item->categoryId()] ?? 'Без категории') ?></p>
           <p class="price"><?= View::e($item->formatPrice()) ?></p>
           <p>Остаток: <?= View::e((string) $item->stock()) ?></p>
+          <form method="post" action="/cart/add">
+            <input type="hidden" name="product_id" value="<?= View::e((string) $item->id()) ?>">
+            <button type="submit">В корзину</button>
+          </form>
         </article>
       <?php endforeach; ?>
     </div>
