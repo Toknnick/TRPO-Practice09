@@ -5,17 +5,12 @@ PHP MVC: корзина, session и контроллер действий.
 **Студент:** Юшин Максим  
 **Группа:** ЭПБО-01-25
 
-## Статус
+## Результат
 
-Шаг 1: каркас на базе практики 8 + dataset практики 9.
+Интернет-магазин с корзиной в `$_SESSION`, `CartService`, POST→Redirect→GET,
+страницей `/cart`, flash-сообщениями и счётчиком в шапке.
 
 ## Запуск
 
 ```bash
 php -S localhost:8000 -t public public/router.php
-```
-
-## Dataset
-
-- `products.json` — товары для корзины (id, name, price)
-- `cart_scenarios.json` — сценарии проверки корзины
