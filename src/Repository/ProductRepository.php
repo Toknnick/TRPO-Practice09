@@ -28,8 +28,8 @@ final class ProductRepository
                 (int) $row['id'],
                 (string) $row['name'],
                 (float) $row['price'],
-                (int) $row['category_id'],
-                (int) $row['stock']
+                (int) ($row['category_id'] ?? 0),
+                (int) ($row['stock'] ?? 0)
             );
         }
 
@@ -52,6 +52,10 @@ final class ProductRepository
      */
     public function categories(): array
     {
+        if (!is_file($this->categoriesFile)) {
+            return [];
+        }
+
         $rows = $this->readJson($this->categoriesFile);
         $categories = [];
 
