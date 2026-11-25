@@ -10,8 +10,8 @@ final class Product
         private int $id,
         private string $name,
         private float $price,
-        private int $categoryId,
-        private int $stock
+        private int $categoryId = 0,
+        private int $stock = 0
     ) {
         if ($id <= 0) {
             throw new \InvalidArgumentException('ID товара должен быть больше 0');
@@ -21,9 +21,6 @@ final class Product
         }
         if ($price < 0) {
             throw new \InvalidArgumentException('Цена не может быть отрицательной');
-        }
-        if ($categoryId <= 0) {
-            throw new \InvalidArgumentException('categoryId должен быть больше 0');
         }
         if ($stock < 0) {
             throw new \InvalidArgumentException('Остаток не может быть отрицательным');

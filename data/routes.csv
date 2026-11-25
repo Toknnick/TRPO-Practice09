@@ -3,4 +3,8 @@ GET;/;HomeController;index
 GET;/catalog;CatalogController;index
 GET;/catalog/product;CatalogController;show
 GET;/about;HomeController;about
+GET;/cart;CartController;index
+POST;/cart/add;CartController;add
+POST;/cart/update;CartController;update
+POST;/cart/remove;CartController;remove
 GET;/missing;ErrorController;notFound

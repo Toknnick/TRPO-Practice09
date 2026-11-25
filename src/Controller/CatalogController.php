@@ -5,75 +5,80 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Core\View;
-use App\Model\Product;
-use App\Repository\ProductRepository;
+use App\Service\CartService;
 
-final class CatalogController
+final class CartController
 {
     public function __construct(
-        private ProductRepository $products
+        private CartService $cart
     ) {
     }
 
     public function index(): void
     {
-        $items = $this->products->all();
-        $categories = $this->products->categories();
-
-        $categoryFilter = trim($_GET['category'] ?? '');
-        $sort = trim($_GET['sort'] ?? '');
-
-        if ($categoryFilter !== '' && ctype_digit($categoryFilter)) {
-            $categoryId = (int) $categoryFilter;
-            $items = array_values(array_filter(
-                $items,
-                static fn(Product $product): bool => $product->belongsToCategory($categoryId)
-            ));
-        }
-
-        if ($sort === 'price') {
-            usort($items, static fn(Product $a, Product $b): int => $a->price() <=> $b->price());
-        } elseif ($sort === 'name') {
-            usort($items, static fn(Product $a, Product $b): int => $a->name() <=> $b->name());
-        }
-
-        $categoryNames = [];
-        foreach ($categories as $category) {
-            $categoryNames[$category->id()] = $category->name();
-        }
-
-        View::render('catalog/index', [
-            'title' => 'Каталог',
-            'items' => $items,
-            'categories' => $categories,
-            'categoryNames' => $categoryNames,
-            'categoryFilter' => $categoryFilter,
-            'sort' => $sort,
-            'currentPath' => '/catalog',
+        View::render('cart/index', [
+            'title' => 'Корзина',
+            'lines' => $this->cart->lines(),
+            'total' => $this->cart->total(),
+            'countItems' => $this->cart->countItems(),
+            'flash' => $this->pullFlash(),
+            'currentPath' => '/cart',
         ]);
     }
 
-    public function show(): void
+    public function add(): void
     {
-        $idRaw = trim($_GET['id'] ?? '');
-        if ($idRaw === '' || !ctype_digit($idRaw)) {
-            (new ErrorController())->notFound();
-            return;
+        try {
+            $productId = (int) ($_POST['product_id'] ?? 0);
+            $this->cart->add($productId, 1);
+            $this->setFlash('Товар добавлен в корзину');
+        } catch (\InvalidArgumentException $e) {
+            $this->setFlash($e->getMessage());
         }
 
-        $product = $this->products->findById((int) $idRaw);
-        if ($product === null) {
-            (new ErrorController())->notFound();
-            return;
+        $this->redirect('/cart');
+    }
+
+    public function update(): void
+    {
+        try {
+            $productId = (int) ($_POST['product_id'] ?? 0);
+            $qty = (int) ($_POST['qty'] ?? 0);
+            $this->cart->setQuantity($productId, $qty);
+            $this->setFlash('Количество обновлено');
+        } catch (\InvalidArgumentException $e) {
+            $this->setFlash($e->getMessage());
         }
 
-        $category = $this->products->findCategoryById($product->categoryId());
+        $this->redirect('/cart');
+    }
 
-        View::render('catalog/show', [
-            'title' => $product->name(),
-            'product' => $product,
-            'categoryName' => $category?->name() ?? 'Без категории',
-            'currentPath' => '/catalog',
-        ]);
+    public function remove(): void
+    {
+        $productId = (int) ($_POST['product_id'] ?? 0);
+        $this->cart->remove($productId);
+        $this->setFlash('Товар удалён из корзины');
+        $this->redirect('/cart');
+    }
+
+    private function redirect(string $path): void
+    {
+        header('Location: ' . $path);
+        exit;
+    }
+
+    private function setFlash(string $message): void
+    {
+        $_SESSION['_flash'] = $message;
+    }
+
+    private function pullFlash(): ?string
+    {
+        if (!isset($_SESSION['_flash'])) {
+            return null;
+        }
+        $message = (string) $_SESSION['_flash'];
+        unset($_SESSION['_flash']);
+        return $message;
     }
 }
