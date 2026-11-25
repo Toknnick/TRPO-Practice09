@@ -1,0 +1,6 @@
+﻿method;path;controller;action
+GET;/;HomeController;index
+GET;/catalog;CatalogController;index
+GET;/catalog/product;CatalogController;show
+GET;/about;HomeController;about
+GET;/missing;ErrorController;notFound
